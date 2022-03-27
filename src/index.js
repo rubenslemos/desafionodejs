@@ -30,7 +30,7 @@ app.post('/users', (request, response) => {
     id: uuidv4(),
     name,
     username,
-    todos: null,
+    todos: [],
   }
   users.push(user)
   return response.status(201).json(user)
@@ -66,32 +66,32 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   }
   todo.title = title
   todo.deadline = new Date(deadline)
-  return response.status(201).json(user.todos).send()
+  return response.status(201).json(todo).send()
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const { user } = request
   const { id } = request.params
 
-  const todoIndex = user.todos.findIndex(todo => todo.id === id)
+  const checkTodo = user.todos.find(todo => todo.id === id)
 
-  if (todoIndex === -1) {
+  if (!checkTodo) {
     return response.status(404).json({ error: 'Todo not found' })
   }
 
-  user.todos.splice(todoIndex, 1)
+  checkTodo.done = true
 
-  return response.status(204).json()
+  return response.json(checkTodo)
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { user } = request
   const { id } = request.params
   const todoIndex = user.todos.find(todo => todo.id === id) 
-  if(!todo) {
+  if(!todoIndex) {
     return response.status(404).json({error:" Todo not found"})
   }
-  user.todos.splice(todo, 1)
+  user.todos.splice(todoIndex, 1)
   return response.status(204).json()
 });
 
